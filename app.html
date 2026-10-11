@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sponge math - calculators</title>
+<style>
+  :root { --accent: #7d9b76; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #f7f9f5; color: #232a20; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #dde6d8; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #566b50; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #b8c9b0; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #7d8577; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sponge math</h1>
+  <p class="lede">What a sponge holds, when to swap it and what a pack really costs. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Hold plan</h2>
+      <p class="hint">A spill becomes wrings.</p>
+      <label for="w-weight">Sponge weight, dry (g)</label>
+      <input id="w-weight" type="number" value="12" min="0" step="1">
+      <label for="w-absorb">Absorbency (times own weight)</label>
+      <input id="w-absorb" type="number" value="8" min="0" step="1">
+      <label for="w-spill">Spill size (mL)</label>
+      <input id="w-spill" type="number" value="250" min="0" step="10">
+      <button id="w-go">Soak it up</button>
+      <div class="out" id="w-out"></div>
+    </section>
+    <section>
+      <h2>Replace plan</h2>
+      <p class="hint">A swap pace becomes a yearly cost.</p>
+      <label for="r-weeks">Swap every (weeks)</label>
+      <input id="r-weeks" type="number" value="2" min="0" step="0.5">
+      <label for="r-price">Price per sponge</label>
+      <input id="r-price" type="number" value="1.2" min="0" step="0.1">
+      <button id="r-go">Count the year</button>
+      <div class="out" id="r-out"></div>
+    </section>
+    <section>
+      <h2>Pack plan</h2>
+      <p class="hint">A multipack becomes months.</p>
+      <label for="p-size">Sponges in the pack</label>
+      <input id="p-size" type="number" value="6" min="0" step="1">
+      <label for="p-price">Pack price</label>
+      <input id="p-price" type="number" value="4.5" min="0" step="0.1">
+      <label for="p-weeks">Swap every (weeks)</label>
+      <input id="p-weeks" type="number" value="2" min="0" step="0.5">
+      <button id="p-go">Weigh the pack</button>
+      <div class="out" id="p-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/spongemath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('w-go').addEventListener('click', function(){
+  show('w-out', SpongeMath.holdPlan(num('w-weight'),num('w-absorb'),num('w-spill')), function(r){ return SpongeMath.renderHold(r, num('w-weight'), num('w-absorb')); });
+});
+document.getElementById('r-go').addEventListener('click', function(){
+  show('r-out', SpongeMath.replacePlan(num('r-weeks'),num('r-price')), function(r){ return SpongeMath.renderReplace(r, num('r-weeks')); });
+});
+document.getElementById('p-go').addEventListener('click', function(){
+  show('p-out', SpongeMath.packPlan(num('p-size'),num('p-price'),num('p-weeks')), function(r){ return SpongeMath.renderPack(r, num('p-size')); });
+});
+</script>
+</body>
+</html>
